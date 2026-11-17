@@ -86,11 +86,14 @@ All four are done.
 
 ## Dependencies
 
-```
-SalesReport.Api             -> Core, Infrastructure
-SalesReport.Infrastructure  -> Core
-SalesReport.Core            -> nothing
-SalesReport.Tests           -> Api, Core, Infrastructure
+```mermaid
+graph TD
+    Api[SalesReport.Api] --> Core[SalesReport.Core]
+    Api --> Infrastructure[SalesReport.Infrastructure]
+    Infrastructure --> Core
+    Tests[SalesReport.Tests] --> Api
+    Tests --> Core
+    Tests --> Infrastructure
 ```
 
 Core has no packages. It holds the model, the calculators and the `ISalesOrderSource` port. Infrastructure reads the CSV (CsvHelper 33.1.0). Api is the composition root (minimal API, `Microsoft.AspNetCore.OpenApi`, `Swashbuckle.AspNetCore.SwaggerUI`). Tests use xUnit and `Microsoft.AspNetCore.Mvc.Testing`.
