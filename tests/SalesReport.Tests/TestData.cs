@@ -7,6 +7,8 @@ internal static class TestData
     public static readonly Product ProductA = new("A", "Product A", "Furniture");
     public static readonly Product ProductB = new("B", "Product B", "Technology");
 
+    public static readonly string IncludedFilePath = Path.Combine(AppContext.BaseDirectory, "Input", "SalesOrders.csv");
+
     public static SalesOrder Order(
         Product product,
         DateOnly orderDate = default,

@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\Input\SalesOrders.csv" Link="Input\SalesOrders.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\SalesReport.Api\SalesReport.Api.csproj" />
     <ProjectReference Include="..\..\src\SalesReport.Core\SalesReport.Core.csproj" />
     <ProjectReference Include="..\..\src\SalesReport.Infrastructure\SalesReport.Infrastructure.csproj" />
