@@ -12,7 +12,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<SalesReportExceptionHandler>();
 builder.Services.AddSingleton<ISalesOrderSource>(new FileSalesOrderSource(salesFilePath));
-builder.Services.AddSingleton<ISalesReportService, SalesReportService>();
+builder.Services.AddSingleton<SalesReportService>();
 
 var app = builder.Build();
 
@@ -25,7 +25,7 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 }
 
-app.MapGet("/sales-report", (ISalesOrderSource source, ISalesReportService service) =>
+app.MapGet("/sales-report", (ISalesOrderSource source, SalesReportService service) =>
 {
     var orders = source.Read();
     var report = service.Calculate(orders);
