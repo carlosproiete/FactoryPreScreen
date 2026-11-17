@@ -2,12 +2,14 @@ using SalesReport.Core;
 
 namespace SalesReport.Infrastructure;
 
-public class FileSalesOrderSource(SalesOrderCsvParser parser, string filePath) : ISalesOrderSource
+public class FileSalesOrderSource(string filePath) : ISalesOrderSource
 {
+    private readonly SalesOrderCsvParser _parser = new();
+
     public IReadOnlyList<SalesOrder> Read()
     {
         using var reader = new StreamReader(filePath);
 
-        return parser.Parse(reader);
+        return _parser.Parse(reader);
     }
 }

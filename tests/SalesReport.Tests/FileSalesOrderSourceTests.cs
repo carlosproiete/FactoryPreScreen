@@ -40,5 +40,5 @@ public class FileSalesOrderSourceTests : IDisposable
         Assert.Equal(2, exception.Line);
     }
 
-    private FileSalesOrderSource Source() => new(new SalesOrderCsvParser(), _path);
+    private FileSalesOrderSource Source() => new(_path);
 }

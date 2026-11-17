@@ -10,7 +10,7 @@ public class IncludedFileReportTests
     [Fact]
     public void Report_MatchesTheIndependentCalculation()
     {
-        var orders = new FileSalesOrderSource(new SalesOrderCsvParser(), IncludedFilePath).Read();
+        var orders = new FileSalesOrderSource(IncludedFilePath).Read();
         var service = new SalesReportService();
         var leastProfitable = new Product("OFF-BI-10004995", "GBC DocuBind P400 Electric Binding System", "Office Supplies");
         var highestDiscount = new Product("OFF-BI-10002609", "Avery Hidden Tab Dividers for Binding Systems", "Office Supplies");
