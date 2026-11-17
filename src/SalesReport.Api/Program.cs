@@ -1,3 +1,4 @@
+using SalesReport.Api.ErrorHandling;
 using SalesReport.Core;
 using SalesReport.Infrastructure;
 
@@ -8,12 +9,16 @@ var configuredFilePath = builder.Configuration["SalesData:FilePath"]
 var salesFilePath = Path.Combine(AppContext.BaseDirectory, configuredFilePath);
 
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<SalesReportExceptionHandler>();
 builder.Services.AddSingleton<SalesOrderCsvParser>();
 builder.Services.AddSingleton<ISalesOrderSource>(services =>
     new FileSalesOrderSource(services.GetRequiredService<SalesOrderCsvParser>(), salesFilePath));
 builder.Services.AddSingleton<ISalesReportService, SalesReportService>();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
