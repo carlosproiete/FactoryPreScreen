@@ -1,6 +1,6 @@
 namespace SalesReport.Core;
 
-public class SalesReportService
+public class SalesReportService : ISalesReportService
 {
     private readonly LeastProfitableProductCalculator _leastProfitableProductCalculator = new();
     private readonly HighestAverageDiscountCalculator _highestAverageDiscountCalculator = new();
