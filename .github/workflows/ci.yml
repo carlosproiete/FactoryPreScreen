@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: 10.0.301
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build
+
+      - name: Smoke test
+        run: |
+          dotnet run --project src/SalesReport.Api --configuration Release --no-build --no-launch-profile --urls http://localhost:5065 &
+          api_pid=$!
+          trap 'kill $api_pid' EXIT
+          curl --fail --silent --show-error --retry 15 --retry-connrefused --retry-delay 1 http://localhost:5065/sales-report | grep --quiet Kansas
