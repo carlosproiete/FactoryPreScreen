@@ -1,3 +1,4 @@
+using SalesReport.Api.Endpoints;
 using SalesReport.Api.ErrorHandling;
 using SalesReport.Core;
 using SalesReport.Infrastructure;
@@ -8,11 +9,13 @@ var configuredFilePath = builder.Configuration["SalesData:FilePath"]
     ?? throw new InvalidOperationException("SalesData:FilePath is not configured.");
 var salesFilePath = Path.Combine(AppContext.BaseDirectory, configuredFilePath);
 
+builder.Services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = false);
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<SalesReportExceptionHandler>();
 builder.Services.AddSingleton<ISalesOrderSource>(new FileSalesOrderSource(salesFilePath));
 builder.Services.AddSingleton<SalesReportService>();
+builder.Services.AddSingleton<UploadedSalesReport>();
 
 var app = builder.Build();
 
@@ -32,6 +35,8 @@ app.MapGet("/sales-report", (ISalesOrderSource source, SalesReportService servic
 
     return report;
 });
+
+app.MapPost("/sales-report", (IFormFile file, UploadedSalesReport upload) => upload.Create(file)).DisableAntiforgery();
 
 app.Run();
 
