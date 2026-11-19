@@ -26,3 +26,11 @@ jobs:
           api_pid=$!
           trap 'kill $api_pid' EXIT
           curl --fail --silent --show-error --retry 15 --retry-connrefused --retry-delay 1 http://localhost:5065/sales-report | grep --quiet Kansas
+
+      - name: Docker smoke test
+        run: |
+          docker build --tag salesreport .
+          docker run --detach --publish 5066:8080 --name salesreport salesreport
+          trap 'docker rm --force salesreport' EXIT
+          curl --fail --silent --show-error --retry 15 --retry-all-errors --retry-delay 1 http://localhost:5066/sales-report | grep --quiet Kansas
+          curl --fail --silent --show-error --form "file=@Input/SalesOrders.csv" http://localhost:5066/sales-report | grep --quiet Kansas
