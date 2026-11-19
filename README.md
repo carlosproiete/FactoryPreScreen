@@ -16,11 +16,28 @@ Open http://localhost:5065. The root redirects to Swagger UI. The report is at `
 
 `dotnet watch run --project src/SalesReport.Api` does the same and also opens the browser. Swagger UI exists only in the Development environment.
 
+To use your own CSV file, send it to `POST /sales-report` as a multipart form, in the field `file`. In Swagger UI, use Try it out and choose the file. From the command line:
+
+```
+curl -F "file=@Input/SalesOrders.csv" http://localhost:5065/sales-report
+```
+
 To run the tests:
 
 ```
 dotnet test
 ```
+
+### With Docker
+
+Requires Docker.
+
+```
+docker build --tag salesreport .
+docker run --publish 5065:8080 --env ASPNETCORE_ENVIRONMENT=Development salesreport
+```
+
+Then open http://localhost:5065. The `ASPNETCORE_ENVIRONMENT` variable is only needed for Swagger UI, which exists only in Development. Without it the endpoints work the same.
 
 ## Expected result for the included file
 
@@ -48,8 +65,10 @@ dotnet test
 * GitHub Actions workflow running `dotnet build` and `dotnet test` on every push and pull request
 * Smoke test step that starts the API and calls the endpoint
 * Build badge at the top of this README
+* Docker image and instructions to run it
+* The input file sent by the API consumer (`POST /sales-report`)
 
-All four are done.
+All are done.
 
 ## Findings in the input file
 
@@ -73,7 +92,8 @@ All four are done.
 * All orders count for every field, except the returned orders count.
 * Standard deviation is the population one, over all 3,024 records. The sample one would be 726.3327.
 * A row that cannot be interpreted rejects the whole file, naming the line. The response has no place to say that rows were skipped.
-* When the report cannot be produced, the response is a generic 500. The detail goes to the log, never to the client.
+* An invalid included file is a server problem: `GET /sales-report` returns a generic 500 and the detail goes to the log, never to the client.
+* An invalid uploaded file is a client problem: `POST /sales-report` returns 400 with the line and column. An upload with no orders is also a 400.
 
 ## Plan
 
@@ -82,7 +102,9 @@ All four are done.
 3. CSV reading with tests.
 4. API endpoint, error handling, Swagger.
 5. CI.
-6. Update this README.
+6. Upload endpoint.
+7. Docker.
+8. Update this README.
 
 ## Dependencies
 
@@ -106,6 +128,8 @@ Dependency injection follows one rule: inject what is volatile (reading the file
 * Stream the file instead of reading all rows into memory, if files were much larger. 3,024 rows fit easily.
 * Make the read asynchronous and accept a `CancellationToken`.
 * Cache the report until the file changes.
+* Run the container as a non-root user and add a health check.
+* Set an explicit limit for the size of an uploaded file.
 
 ## Original instructions
 
